@@ -7,7 +7,7 @@ class DLinkedList;  // Forward declaration
 
 template <typename T>
 class DNode {
-private:
+public:
     T elem;
     DNode<T>* prev;
     DNode<T>* next;
@@ -27,6 +27,7 @@ public:
     void removeFront();
     void removeBack();
     void display() const;
+    DNode<T>* findCenter();  // 중앙 노드 찾기
 
 private:
     DNode<T>* header;
@@ -54,22 +55,25 @@ DLinkedList<T>::~DLinkedList() {
     delete trailer;
 }
 
-// 비었는지 확인
+// 리스트 비었는지 확인
 template <typename T>
 bool DLinkedList<T>::empty() const {
     return (header->next == trailer);
 }
 
+// 첫 번째 요소
 template <typename T>
 const T& DLinkedList<T>::front() const {
     return header->next->elem;
 }
 
+// 마지막 요소
 template <typename T>
 const T& DLinkedList<T>::back() const {
     return trailer->prev->elem;
 }
 
+// 노드 추가 (기본 유틸)
 template <typename T>
 void DLinkedList<T>::add(DNode<T>* v, const T& e) {
     DNode<T>* u = new DNode<T>;
@@ -80,16 +84,19 @@ void DLinkedList<T>::add(DNode<T>* v, const T& e) {
     v->prev = u;
 }
 
+// 앞에 추가
 template <typename T>
 void DLinkedList<T>::addFront(const T& e) {
     add(header->next, e);
 }
 
+// 뒤에 추가
 template <typename T>
 void DLinkedList<T>::addBack(const T& e) {
     add(trailer, e);
 }
 
+// 노드 삭제 (기본 유틸)
 template <typename T>
 void DLinkedList<T>::remove(DNode<T>* v) {
     DNode<T>* u = v->prev;
@@ -99,16 +106,19 @@ void DLinkedList<T>::remove(DNode<T>* v) {
     delete v;
 }
 
+// 앞 제거
 template <typename T>
 void DLinkedList<T>::removeFront() {
     remove(header->next);
 }
 
+// 뒤 제거
 template <typename T>
 void DLinkedList<T>::removeBack() {
     remove(trailer->prev);
 }
 
+// 출력
 template <typename T>
 void DLinkedList<T>::display() const {
     DNode<T>* v = header->next;
@@ -120,51 +130,39 @@ void DLinkedList<T>::display() const {
     cout << endl;
 }
 
-// 리스트 뒤집기 함수
+// 중앙 노드 찾기 (링크 따라가며)
 template <typename T>
-void listReverse(DLinkedList<T>& L) {
-    DLinkedList<T> Tlist;
-    while (!L.empty()) {
-        T elem = L.front();
-        L.removeFront();
-        Tlist.addFront(elem);
+DNode<T>* DLinkedList<T>::findCenter() {
+    DNode<T>* forward = header->next;
+    DNode<T>* backward = trailer->prev;
+
+    while (forward != backward && forward->next != backward) {
+        forward = forward->next;
+        backward = backward->prev;
     }
-    while (!Tlist.empty()) {
-        T elem = Tlist.front();
-        Tlist.removeFront();
-        L.addBack(elem);
-    }
+    return forward;
 }
 
-// main 함수
+// 메인 함수
 int main() {
-    DLinkedList<string> a;
+    DLinkedList<string> list1;
+    list1.addBack("A");
+    list1.addBack("B");
+    list1.addBack("C");
+    list1.addBack("D");
+    list1.addBack("E");
+    list1.display();
+    DNode<string>* center1 = list1.findCenter();
+    cout << "[홀수] 중앙 노드: " << center1->elem << endl;
 
-    a.addFront("Korea");
-    a.display();
-    a.addBack("Japan");
-    a.display();
-    a.addBack("China");
-    a.display();
-    a.addFront("UK");
-    a.display();
-    a.addFront("France");
-    a.display();
-    a.addFront("Spain");
-    a.display();
-    a.removeBack();
-    a.display();
-    a.removeFront();
-    a.display();
-
-    listReverse(a);
-    a.display();
-
-    DLinkedList<int> b;
-    b.addFront(1);
-    b.addBack(2);
-    b.addBack(3);
-    b.display();
+    DLinkedList<string> list2;
+    list2.addBack("1");
+    list2.addBack("2");
+    list2.addBack("3");
+    list2.addBack("4");
+    list2.display();
+    DNode<string>* center2 = list2.findCenter();
+    cout << "[짝수] 중앙 노드: " << center2->elem << endl;
 
     return 0;
 }
